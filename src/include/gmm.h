@@ -1,4 +1,4 @@
-/* Copyright (C) Universitat Politècnica de Catalunya, Barcelona, Spain.
+/* Copyright (C) Universitat Politï¿½cnica de Catalunya, Barcelona, Spain.
  *
  * Permission to copy, use, modify, sell and distribute this software
  * is granted provided this copyright notice appears in all copies.
@@ -43,7 +43,7 @@ namespace upc {
     **/
   protected:
     size_t vector_size; ///< size of each input data (num. parameters)
-    size_t nmix; ///< number of mixtures in the GMM
+    size_t nmix; ///< number of mixtures in the GMM, cuantas gaussianas tiene la mezcla
     upc::fvector w; ///< w[i]: weight of Mixture i
     upc::fmatrix mu, ///< mu[i]: mean of Mixture i (vector: mu[i][0] ... mu[i][vector_size-1])
       inv_sigma; ///< inv_sigma[i]: inverse of sigma of mixture i (vector, assuming diagonal covariance)
