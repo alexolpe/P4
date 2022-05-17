@@ -31,25 +31,27 @@ if [[ $UBUNTU_SPTK == 1 ]]; then
    FRAME="sptk frame"
    WINDOW="sptk window"
    LPCC="sptk lpc2c"
+   LPC="sptk lpc"
 else
    # or install SPTK building it from its source
    X2X="x2x"
    FRAME="frame"
    WINDOW="window"
    LPCC="lpc2c"
+   LPC="lpc"
 fi
 
 # Main command for feature extration
 sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
-	$LPCC -m $lpc_order -M $cepstrum_order> $base.lp
+	$LPC -l 240 -m $lpc_order | $LPCC -m $lpc_order -M $cepstrum_order> $base.lpcc
 
 # Our array files need a header with the number of cols and rows:
-ncol=$((lpc_order+1)) # lpc p =>  (gain a1 a2 ... ap) 
-#nrow=`$X2X +fa < $base.lp | wc -l | perl -ne 'print $_/'$ncol', "\n";'` # `` Hace que se escriba en la posicion determinada
-nrow=$($X2X +fa < $base.lp | wc -l | perl -ne 'print $_/'$ncol', "\n";') #alternativa moderna de la linia superior
-
+ncol=$((cepstrum_order+1)) # lpc p =>  (gain a1 a2 ... ap) 
+#nrow=`$X2X +fa < $base.lpcc | wc -l | perl -ne 'print $_/'$ncol', "\n";'` # `` Hace que se escriba en la posicion determinada
+nrow=$($X2X +fa < $base.lpcc | wc -l | perl -ne 'print $_/'$ncol', "\n";') #alternativa moderna de la linia superior
+echo $nrow $ncol
 # Build fmatrix file by placing nrow and ncol in front, and the data after them
 echo $nrow $ncol | $X2X +aI > $outputfile
-cat $base.lp >> $outputfile
+cat $base.lpcc >> $outputfile
 
 exit
