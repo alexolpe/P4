@@ -49,7 +49,6 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
 ncol=$((cepstrum_order+1)) # lpc p =>  (gain a1 a2 ... ap) 
 #nrow=`$X2X +fa < $base.lpcc | wc -l | perl -ne 'print $_/'$ncol', "\n";'` # `` Hace que se escriba en la posicion determinada
 nrow=$($X2X +fa < $base.lpcc | wc -l | perl -ne 'print $_/'$ncol', "\n";') #alternativa moderna de la linia superior
-echo $nrow $ncol
 # Build fmatrix file by placing nrow and ncol in front, and the data after them
 echo $nrow $ncol | $X2X +aI > $outputfile
 cat $base.lpcc >> $outputfile

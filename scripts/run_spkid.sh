@@ -15,7 +15,8 @@
 lists=lists
 w=work
 name_exp=one
-db=spk_8mu/speecon
+db_devel=spk_8mu/speecon
+db_final=spk_8mu/sr_test
 world=users
 
 #Referencia del ano pasado
@@ -68,7 +69,7 @@ if [[ -z "$w" ]]; then echo "Edit this script and set variable 'w'"; exit 1; fi
 mkdir -p $w  #Create directory if it does not exists
 if [[ $? -ne 0 ]]; then echo "Error creating directory $w"; exit 1; fi
 
-if [[ ! -d "$db" ]]; then
+if [[ ! -d "$db_devel" ]]; then
    echo "Edit this script and set variable 'db' to speecon db"
    exit 1
 fi
@@ -103,7 +104,9 @@ compute_lp() {
 }
 
 compute_lpcc(){
-    for filename in $(sort $lists/class/all.train $lists/class/all.test); do
+    db=$1
+    shift
+    for filename in $(sort $*); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
         EXEC="wav2lpcc 15 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
@@ -144,7 +147,7 @@ for cmd in $*; do
        ## @file
 	   # \TODO
 	   # Select (or change) good parameters for gmm_train
-       for dir in $db/BLOCK*/SES* ; do
+       for dir in $db_devel/BLOCK*/SES* ; do
            name=${dir/*\/}
            echo $name ----
            # canviar T
@@ -199,8 +202,10 @@ for cmd in $*; do
 	   # Perform the final test on the speaker classification of the files in spk_ima/sr_test/spk_cls.
 	   # The list of users is the same as for the classification task. The list of files to be
 	   # recognized is lists/final/class.test
-       echo "To be implemented ..."
-   
+       compute_$FEAT $db_final $lists/final/class.test
+        (gmm_classify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm $lists/gmm.list  $lists/final/class.test | tee class_test.log) || exit 1
+
+
    elif [[ $cmd == finalverif ]]; then
        ## @file
 	   # \TODO
@@ -208,13 +213,18 @@ for cmd in $*; do
 	   # The list of legitimate users is lists/final/verif.users, the list of files to be verified
 	   # is lists/final/verif.test, and the list of users claimed by the test files is
 	   # lists/final/verif.test.candidates
-       echo "To be implemented ..."
-   
+        compute_$FEAT $db_final $lists/final/verif.test
+       gmm_verify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm -w $world lists/final/verif.users lists/final/verif.test lists/final/verif.test.candidates | tee $w/verif_test.log
+        #$F[2]> canviar valor per minimitzar el cost (thd) optim
+        perl -ane 'print "$F[0]\t$F[1]\t";
+            if ($F[2] > 0.974854913166401) {print "1\n"}
+            else {print "0\n"}' $w/verif_test.log | tee verif_test.log
+
    # If the command is not recognize, check if it is the name
    # of a feature and a compute_$FEAT function exists.
    elif [[ "$(type -t compute_$cmd)" = function ]]; then
 	   FEAT=$cmd
-       compute_$FEAT       
+       compute_$FEAT $db_devel $lists/class/all.train $lists/class/all.test       
    else
        echo "undefined command $cmd" && exit 1
    fi
