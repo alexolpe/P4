@@ -1,6 +1,8 @@
 PAV - P4: reconocimiento y verificación del locutor
 ===================================================
 
+![image](https://user-images.githubusercontent.com/91085077/170586686-f053842a-981e-4345-8d7d-14aff02ee59c.png)
+
 Obtenga su copia del repositorio de la práctica accediendo a [Práctica 4](https://github.com/albino-pav/P4)
 y pulsando sobre el botón `Fork` situado en la esquina superior derecha. A continuación, siga las
 instrucciones de la [Práctica 2](https://github.com/albino-pav/P2) para crear una rama con el apellido de
