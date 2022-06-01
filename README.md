@@ -3,30 +3,6 @@ PAV - P4: reconocimiento y verificación del locutor
 
 ![image](https://user-images.githubusercontent.com/91085077/170586686-f053842a-981e-4345-8d7d-14aff02ee59c.png)
 
-Obtenga su copia del repositorio de la práctica accediendo a [Práctica 4](https://github.com/albino-pav/P4)
-y pulsando sobre el botón `Fork` situado en la esquina superior derecha. A continuación, siga las
-instrucciones de la [Práctica 2](https://github.com/albino-pav/P2) para crear una rama con el apellido de
-los integrantes del grupo de prácticas, dar de alta al resto de integrantes como colaboradores del proyecto
-y crear la copias locales del repositorio.
-
-También debe descomprimir, en el directorio `PAV/P4`, el fichero [db_8mu.tgz](https://atenea.upc.edu/mod/resource/view.php?id=3508877?forcedownload=1)
-con la base de datos oral que se utilizará en la parte experimental de la práctica.
-
-Como entrega deberá realizar un *pull request* con el contenido de su copia del repositorio. Recuerde
-que los ficheros entregados deberán estar en condiciones de ser ejecutados con sólo ejecutar:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.sh
-  make release
-  run_spkid mfcc train test classerr verify verifyerr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Recuerde que, además de los trabajos indicados en esta parte básica, también deberá realizar un proyecto
-de ampliación, del cual deberá subir una memoria explicativa a Atenea y los ficheros correspondientes al
-repositorio de la práctica.
-
-A modo de memoria de la parte básica, complete, en este mismo documento y usando el formato *markdown*, los
-ejercicios indicados.
-
 ## Ejercicios.
 
 ### SPTK, Sox y los scripts de extracción de características.
@@ -34,12 +10,17 @@ ejercicios indicados.
 - Analice el script `wav2lp.sh` y explique la misión de los distintos comandos involucrados en el *pipeline*
   principal (`sox`, `$X2X`, `$FRAME`, `$WINDOW` y `$LPC`). Explique el significado de cada una de las 
   opciones empleadas y de sus valores.
+  La misión del script wav2lp.sh consiste en realizar una parametrización de una señal de voz usando coeficientes de predicción lineal. El comando sox sirve para generar una nueva señal con los parámetros que se mencionan a continuación. La variable $X2X consiste en un comando llamado spkt x2x que permite parametrizar la señal i devuelve los coeficientes de predicción lineal. Dentro de ese comando se debe especificar el $FRAME que indica como partir la señal original para poder parametrizarla por trozos y la $WINDOW que indica dentro de cada frame que ventana utilizaremos para hacer la predicción. Finalmente, se encuentra el parámetro $LPC que indica basicamente que tipo de predicción lineal se va a realizar.
+ 
 
 - Explique el procedimiento seguido para obtener un fichero de formato *fmatrix* a partir de los ficheros de
   salida de SPTK (líneas 45 a 47 del script `wav2lp.sh`).
-
+  Para obtener un fichero de formato fmatrix a la salida se debe calcular el número de columnas que deberá tener la matriz y el número de filas. Como se puede observar el número de columnas se calcula según el parámetro lpc_order que indica cuantos coeficientes de predicción lineal se tienen y se suma uno porque el primer parámetro que entrega esta variable no lo debemos de tener en cuenta ya que es la ganancia de la prediccón. Las columnas en cambio se calculan en función de los frames que tiene en una señal de voz. 
+  
+  
   * ¿Por qué es conveniente usar este formato (u otro parecido)? Tenga en cuenta cuál es el formato de
     entrada y cuál es el de resultado.
+    Conviene usar este formato porque entrega los datos de forma muy ordenada cosa que simplifica mucho la comparación con otras matrices. El formato de entrada es una señal unidimensional (un vector) con las muestras de la señal muestreada de áudio. El formato de salida es una matriz con las columnas que representan los coeficientes de predicción lineal de cada trama que son las filas. 
 
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales de predicción lineal
   (LPCC) en su fichero <code>scripts/wav2lpcc.sh</code>:
