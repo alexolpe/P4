@@ -147,18 +147,18 @@ namespace upc {
 
     for (n=0; n<data.nrow(); ++n) {
       for (k=0; k < nmix; ++k) {
-	w[k] +=  weights[n][k];
-	for (j=0; j < vector_size; ++j) {
-	  mu[k][j] += weights[n][k] * data[n][j]; /* sum{x w_i} */
-	  inv_sigma[k][j] += weights[n][k] * data[n][j] * data[n][j]; /* sum{x^2 w_i} */
-	}
+	      w[k] +=  weights[n][k];
+        for (j=0; j < vector_size; ++j) {
+          mu[k][j] += weights[n][k] * data[n][j]; /* sum{x w_i} */
+          inv_sigma[k][j] += weights[n][k] * data[n][j] * data[n][j]; /* sum{x^2 w_i} */
+        }
       }
     }
     for (k=0; k < nmix; ++k) {
       for (j=0; j < vector_size; ++j) {
-	mu[k][j] /= w[k]; /* sum{x w_i}/sum{w_i} */
-	inv_sigma[k][j] /= w[k]; /* sum{x^2 w_i}/sum{w_i} */
-	inv_sigma[k][j] = 1.0F/sqrt(inv_sigma[k][j] - mu[k][j]*mu[k][j]); /* 1/sigma */
+        mu[k][j] /= w[k]; /* sum{x w_i}/sum{w_i} */
+        inv_sigma[k][j] /= w[k]; /* sum{x^2 w_i}/sum{w_i} */
+        inv_sigma[k][j] = 1.0F/sqrt(inv_sigma[k][j] - mu[k][j]*mu[k][j]); /* 1/sigma */
       }
       w[k] /=  data.nrow();
     }
@@ -175,8 +175,7 @@ namespace upc {
     if (data.ncol() != vector_size)
       return -1.0;
 
-    if (weights.nrow() != data.nrow() or
-	weights.ncol() != nmix)
+    if (weights.nrow() != data.nrow() or weights.ncol() != nmix)
       weights.resize(data.nrow(), nmix);
 
     //use log(prob) for intermediate computation, to avoid underflow

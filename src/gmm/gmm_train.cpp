@@ -11,7 +11,7 @@ using namespace upc;
 const string DEF_INPUT_EXT = "mcp";
 const unsigned int DEF_ITERATIONS = 20;
 const float DEF_THR = 1e-3;
-const unsigned int DEF_NMIXTURES = 5;
+const unsigned int DEF_NMIXTURES = 32;
 const string DEF_GMMFILE = "output.gmc";
 
 int read_data(const string & input_directory, const string & input_extension, 
@@ -60,8 +60,10 @@ int main(int argc, const char *argv[]) {
     gmm.random_init(data, nmix);
     break;
   case 1:
+    gmm.em_split(data, nmix, init_iterations, init_threshold, verbose);
     break;
   case 2:
+    gmm.vq_lbg(data, nmix, init_iterations, init_threshold, verbose);
     break;
   default:
     ;

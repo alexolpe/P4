@@ -23,9 +23,16 @@ world=users
 #menos 0.5 porciento de error en clasificacion
 #coste por debajo del 5 en verificacion
 
-#m mayor pero cale cambiar inicializacion aleatoria
-WORLD_OPTS="-T 1.e-6 -N10 -m 5"
-TRAIN_OPTS="-T 1.e-6 -N10 -m 5"  
+#Buscar valors optims d'aquests llindars
+em_threshold=1.e-3
+em_iterations=64
+nmix=32
+#init_method=1=>EM, init_method=2=>VQ
+init_method=1
+
+#m mayor pero hace falta cambiar inicializacion aleatoria
+WORLD_OPTS="-T $em_threshold -N $em_iterations -m $nmix -i $init_method"
+TRAIN_OPTS="-T $em_threshold -N $em_iterations -m $nmix -i $init_method"  
 
 # ------------------------
 # Usage
@@ -96,6 +103,7 @@ fi
 # - Select (or change) different features, options, etc. Make you best choice and try several options.
 
 compute_lp() {
+    db=$1
     for filename in $(sort $lists/class/all.train $lists/class/all.test); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
         EXEC="wav2lp 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
@@ -108,15 +116,16 @@ compute_lpcc(){
     shift
     for filename in $(sort $*); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2lpcc 15 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2lpcc 8 15 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
 
 compute_mfcc(){
+    db=$1
     for filename in $(sort $lists/class/all.train $lists/class/all.test); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2mfcc 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2mfcc 12 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
