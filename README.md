@@ -50,20 +50,67 @@ PAV - P4: reconocimiento y verificación del locutor
 - Inserte una imagen mostrando la dependencia entre los coeficientes 2 y 3 de las tres parametrizaciones
   para todas las señales de un locutor.
   
+  
+  ![imagen](https://user-images.githubusercontent.com/91128741/171908817-2d96b849-4672-43e1-ad49-2603489abcec.png)
+  
+  ![imagen](https://user-images.githubusercontent.com/91128741/171911071-41cd1354-8eda-4e35-9335-0ba92745b60b.png)
+
+  ![imagen](https://user-images.githubusercontent.com/91128741/171911349-48c31094-d375-467e-bead-1954ee1c836f.png)
+
+
   + Indique **todas** las órdenes necesarias para obtener las gráficas a partir de las señales 
     parametrizadas.
-  + ¿Cuál de ellas le parece que contiene más información?
+    
+    Primero para gestionar los datos del locuutor se ha creado una nueva carpeta llamada graph donde almazenaremos los ficheros .txt que interesan para poder graficar los coeficientes. Para empezar, se ha analizado los coeficientes lp, concretamente el segundo y el tercero. Para realizar la extracción de datos se procede a utlizar el siguiente comando en el shell que nos permite extraer de la matriz los coeficientes que nos iteresan. 
+    ```sh
+     fmatrix_show work/lp/BLOCK00/SES005/*.lp | egrep '^\[' | cut -f3,4 > graph/lp.txt
+    ```
+ Este comando lo repetimos para los dos otros métodos de predicción lineal (lpcc y mfcc).
+ 
+ ```sh
+ fmatrix_show work/lpcc/BLOCK00/SES005/*.lpcc | egrep '^\[' | cut -f3,4 > graph/lpcc.txt
+ ```
+```sh
+ fmatrix_show work/mfcc/BLOCK00/SES005/*.mfcc | egrep '^\[' | cut -f3,4 > graph/mfcc.txt
+ ```
+ En matlab para crear las graficas hemos realizado el siguiente comando:
+ ```matlab
+ A = importdata('mfcc.txt');
+figure
+plot(A(:,1),A(:,2),'.')
+grid on
+xlabel('a(2)')
+ylabel('a(3)')
+title('MFCC')
+ 
+ ```
+ + ¿Cuál de ellas le parece que contiene más información?
+
+
+La gráfica que parece que tiene más información es la del MFCC seguido de la del LPCC porque los parámetros no están muy correlados. Esto nos aporta mayor entropia que a su vez significa mayor información. En cambio la gráfica LP vemos que todos los parámetros están muy correlados ya que se genera una recta estrecha (no hay demasiada dispersión), cosa que idica que no nos aporta demasiada información.
+
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
   parámetros 2 y 3 para un locutor, y rellene la tabla siguiente con los valores obtenidos.
 
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
-  | &rho;<sub>x</sub>[2,3] |      |      |      |
+  | &rho;<sub>x</sub>[2,3] |   -0.705651   |0.300302      |   0.231577   |
   
   + Compare los resultados de <code>pearson</code> con los obtenidos gráficamente.
+  Sabemos que un valor alto de la rho[2,3] nos indica que los coeficientes están muy correlados y un valor bajo nos indica lo contrario. Si comparamos las gráficas vemos que estamos en lo cierto, el valor de rho más cercano a 0 es el del MFCC tal y como se ha comentado en las gráficas y esto es porqué los coeficientes son poco correlados. Seguidamente tenemos el método LPCC que también muestra poca correlación en sus coeficientes pero en mayor medida que los MFCC. Por útlimo, tenemos los coeficientes extraídos con LP que tienen una correlación muy elevada. 
+  En conclusión, los resultados de las tablas concuerdan con los de las gráficas.
   
 - Según la teoría, ¿qué parámetros considera adecuados para el cálculo de los coeficientes LPCC y MFCC?
+
+LPCC
+
+De 8 a 12 coeficientes de predicción (P) y (3/2)P coeficientes cepstrales (Q).
+
+MFCC
+
+Se utilizan entre 14 y 18 coeficientes para reconocimiento del hablante.
+    Se suele utilizar un banco de 24 a 40 filtros paso-banda en la escala Mel, aunque también obtenemos buenos resultados con 20 filtros.
 
 ### Entrenamiento y visualización de los GMM.
 
