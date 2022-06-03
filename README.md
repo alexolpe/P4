@@ -1,8 +1,6 @@
 PAV - P4: reconocimiento y verificación del locutor
 ===================================================
 
-![image](https://user-images.githubusercontent.com/91085077/170586686-f053842a-981e-4345-8d7d-14aff02ee59c.png)
-
 ## Ejercicios.
 
 ### SPTK, Sox y los scripts de extracción de características.
@@ -10,23 +8,42 @@ PAV - P4: reconocimiento y verificación del locutor
 - Analice el script `wav2lp.sh` y explique la misión de los distintos comandos involucrados en el *pipeline*
   principal (`sox`, `$X2X`, `$FRAME`, `$WINDOW` y `$LPC`). Explique el significado de cada una de las 
   opciones empleadas y de sus valores.
-  La misión del script wav2lp.sh consiste en realizar una parametrización de una señal de voz usando coeficientes de predicción lineal. El comando sox sirve para generar una nueva señal con los parámetros que se mencionan a continuación. La variable $X2X consiste en un comando llamado spkt x2x que permite parametrizar la señal i devuelve los coeficientes de predicción lineal. Dentro de ese comando se debe especificar el $FRAME que indica como partir la señal original para poder parametrizarla por trozos y la $WINDOW que indica dentro de cada frame que ventana utilizaremos para hacer la predicción. Finalmente, se encuentra el parámetro $LPC que indica basicamente que tipo de predicción lineal se va a realizar.
+  
+  La misión del script wav2lp.sh consiste en realizar una parametrización de una señal de voz usando coeficientes de predicción lineal.
+  
+  El comando sox sirve para generar una nueva señal con los parámetros que se mencionan a continuación y sin cabezeras. 
+  
+  La variable $X2X consiste en un comando llamado spkt x2x que permite convertir los datos de entrada en otro tipo de datos. Estos tipos de datos de entrada y salida los podemos especificar en la linea de comandos.
+  
+  Dentro de ese comando se debe especificar el $FRAME que indica como partir la señal original para poder parametrizarla por trozos y la $WINDOW sirve para enventanar una secuencia de datos. La ventana escogida (-w) (Blackman, Hamming, Barlett,...) se multiplica por la secuencia de datos de entrada de longitud (-l) l obteniendo una salida de longitud (-L) L. En wav2lp.sh se usa la ventana de Blackman por defecto y una longitud de 240 muestras tanto para los datos de entrada como los de salida.
  
 
 - Explique el procedimiento seguido para obtener un fichero de formato *fmatrix* a partir de los ficheros de
   salida de SPTK (líneas 45 a 47 del script `wav2lp.sh`).
-  Para obtener un fichero de formato fmatrix a la salida se debe calcular el número de columnas que deberá tener la matriz y el número de filas. Como se puede observar el número de columnas se calcula según el parámetro lpc_order que indica cuantos coeficientes de predicción lineal se tienen y se suma uno porque el primer parámetro que entrega esta variable no lo debemos de tener en cuenta ya que es la ganancia de la prediccón. Las columnas en cambio se calculan en función de los frames que tiene en una señal de voz. 
   
+  Primero de todo se debe entrenar la señal de entrada, de esa manera se obtiene el fichero $base.lp que proporciona los coeficientes LPC.
+  Para obtener un fichero de formato fmatrix a la salida se debe calcular el número de columnas que deberá tener la matriz y el número de filas. Como se puede observar el número de columnas se calcula según el parámetro lpc_order que indica cuantos coeficientes de predicción lineal se tienen y se suma uno porque el primer parámetro que entrega esta variable se debe tener en cuenta ya que es la ganancia de la prediccón. Eso lo extraemos del fichero .lp convirtiendo el contenido a ASCII con X2X +fa y contando el número de líneas con el comando wc -l.
   
   * ¿Por qué es conveniente usar este formato (u otro parecido)? Tenga en cuenta cuál es el formato de
     entrada y cuál es el de resultado.
+    
     Conviene usar este formato porque entrega los datos de forma muy ordenada cosa que simplifica mucho la comparación con otras matrices. El formato de entrada es una señal unidimensional (un vector) con las muestras de la señal muestreada de áudio. El formato de salida es una matriz con las columnas que representan los coeficientes de predicción lineal de cada trama que son las filas. 
 
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales de predicción lineal
   (LPCC) en su fichero <code>scripts/wav2lpcc.sh</code>:
 
+    ```sh
+    sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
+       $LPC -l 240 -m $lpc_order | $LPCC -m $lpc_order -M $cepstrum_order > $base.lpcc
+    ```
+
+
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales en escala Mel (MFCC) en su
   fichero <code>scripts/wav2mfcc.sh</code>:
+    ```sh
+    sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
+       $MFCC -l 240 -m $mfcc_order -n $num_filters -s $sampl_freq > $base.mfcc
+    ```
 
 ### Extracción de características.
 
