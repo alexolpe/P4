@@ -116,7 +116,7 @@ Se utilizan entre 14 y 18 coeficientes para reconocimiento del hablante.
 
 Complete el código necesario para entrenar modelos GMM.
 
-![imagen](https://user-images.githubusercontent.com/91128741/172025783-b29e617d-f1ba-4ff7-a3aa-82e81e669836.png)
+
 
 
 
@@ -124,10 +124,23 @@ Complete el código necesario para entrenar modelos GMM.
   para sus dos primeros coeficientes de MFCC.
   
   
+![imagen](https://user-images.githubusercontent.com/91128741/172026208-effc06f1-6850-412a-a93e-339d0061cb36.png)
+
+
+  
+  
+  
   
 - Inserte una gráfica que permita comparar los modelos y poblaciones de dos locutores distintos (la gŕafica
   de la página 20 del enunciado puede servirle de referencia del resultado deseado). Analice la capacidad
   del modelado GMM para diferenciar las señales de uno y otro.
+  
+ ![imagen](https://user-images.githubusercontent.com/91128741/172026774-a3c986f3-a608-44fe-8eb4-0b7471844837.png)
+ 
+  La primera fila de imagenes corresponden al modelo gausiano del locutor 145 comparada con las poblaciones 145 y 189. 
+  La segunda fila de imagenes corresponden al modelo gausiano del locutor 190 comparada con las poblaciones 145 y 189.
+
+
 
 ### Reconocimiento del locutor.
 
@@ -135,6 +148,11 @@ Complete el código necesario para realizar reconociminto del locutor y optimice
 
 - Inserte una tabla con la tasa de error obtenida en el reconocimiento de los locutores de la base de datos
   SPEECON usando su mejor sistema de reconocimiento para los parámetros LP, LPCC y MFCC.
+  
+  
+  |                        | LP   | LPCC | MFCC |
+  |------------------------|:----:|:----:|:----:|
+  | &rho;<sub>x</sub>[2,3] |   -0.705651   |0.300302      |   0.231577   |
 
 ### Verificación del locutor.
 
