@@ -11,7 +11,7 @@ PAV - P4: reconocimiento y verificación del locutor
   
   La misión del script wav2lp.sh consiste en realizar una parametrización de una señal de voz usando coeficientes de predicción lineal.
   
-  El comando sox sirve para generar una nueva señal con los parámetros que se mencionan a continuación y sin cabezeras. 
+  El comando sox sirve para generar una nueva señal con los parámetros que se mencionan a continuación y sin cabezeras.  Tiene una infinidad de opciones, entre ellas: mezclar múltiples ficheros de entrada, normalizar, ajuste de volumen, definir tipo de archivo de salida, número de canales, etc.
   
   La variable $X2X consiste en un comando llamado spkt x2x que permite convertir los datos de entrada en otro tipo de datos. Estos tipos de datos de entrada y salida los podemos especificar en la linea de comandos.
   
