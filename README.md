@@ -11,12 +11,14 @@ PAV - P4: reconocimiento y verificación del locutor
   
   La misión del script wav2lp.sh consiste en realizar una parametrización de una señal de voz usando coeficientes de predicción lineal.
   
-  El comando sox sirve para generar una nueva señal con los parámetros que se mencionan a continuación y sin cabezeras.  Tiene una infinidad de opciones, entre ellas: mezclar múltiples ficheros de entrada, normalizar, ajuste de volumen, definir tipo de archivo de salida, número de canales, etc.
+ •	Sox: se utiliza para convertir una señal de audio en formato WAVE a (-t) un señal sin cabeceras, codificado como (-e) signed de (-b) 16 bits. De entre todas las funciones que tiene destacan: mezclar múltiples ficheros de entrada, normalizar, definir tipo de archivo de salida, número de canales…
   
-  La variable $X2X consiste en un comando llamado spkt x2x que permite convertir los datos de entrada en otro tipo de datos. Estos tipos de datos de entrada y salida los podemos especificar en la linea de comandos.
-  
-  Dentro de ese comando se debe especificar el $FRAME que indica como partir la señal original para poder parametrizarla por trozos y la $WINDOW sirve para enventanar una secuencia de datos. La ventana escogida (-w) (Blackman, Hamming, Barlett,...) se multiplica por la secuencia de datos de entrada de longitud (-l) l obteniendo una salida de longitud (-L) L. En wav2lp.sh se usa la ventana de Blackman por defecto y una longitud de 240 muestras tanto para los datos de entrada como los de salida.
+ •	$X2X: Programa de SPTK que nos permite convertir datos de una entrada estándard a otro tipo de datos (+sf, short format en nuestro caso), enviando el resultado a una salida estándar.
  
+ •	$WINDOW: se utiliza para enventanar una secuencia de datos. La ventana escogida (-w) (Blackman, Hamming, Barlett,...) se multiplica por la secuencia de datos de entrada de una determinada longitud (-l) obteniendo una salida de una nueva longitud (-L). En este caso se usa la ventana de Blackman por defecto y una longitud de 240 muestras tanto para los datos de entrada como los de salida.
+ 
+ •	$LPC: Calcula los coeficientes LPC (predicción lineal) usando el método Levinson-Durbin. Se pueden fijar parámetros como la longitud del frame (-l) a 240 muestras y el orden del LPC (-m).
+
 
 - Explique el procedimiento seguido para obtener un fichero de formato *fmatrix* a partir de los ficheros de
   salida de SPTK (líneas 45 a 47 del script `wav2lp.sh`).
@@ -27,7 +29,7 @@ PAV - P4: reconocimiento y verificación del locutor
   * ¿Por qué es conveniente usar este formato (u otro parecido)? Tenga en cuenta cuál es el formato de
     entrada y cuál es el de resultado.
     
-    Conviene usar este formato porque entrega los datos de forma muy ordenada cosa que simplifica mucho la comparación con otras matrices. El formato de entrada es una señal unidimensional (un vector) con las muestras de la señal muestreada de áudio. El formato de salida es una matriz con las columnas que representan los coeficientes de predicción lineal de cada trama que son las filas. 
+ Utilizando este formato se puede pasar de una señal de entrada que es un señal unidimensional (un vector) con las muestras de la señal de audio a una matriz en la que se tiene un fácil y rápido acceso a todos los datos almacenados. Además, tienen una correspondencia directa entre la posición en la matriz y el orden del coeficiente y número de trama, por lo que simplifica mucho su manipulación a la hora de trabajar. También ofrece información directa en la cabecera sobre el número de tramas y de coeficientes calculados
 
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales de predicción lineal
   (LPCC) en su fichero <code>scripts/wav2lpcc.sh</code>:
@@ -152,7 +154,7 @@ Complete el código necesario para realizar reconociminto del locutor y optimice
   
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
-  | &rho;<sub>x</sub>[2,3] |   -0.705651   |0.300302      |   0.231577   |
+  | tasa error |   -0.705651   |0.300302      |   0.231577   |
 
 ### Verificación del locutor.
 
