@@ -14,14 +14,16 @@ cleanup() {
    \rm -f $base.*
 }
 
-if [[ $# != 3 ]]; then
-   echo "$0 lpc_order input.wav output.mfcc"
+if [[ $# != 5 ]]; then
+   echo "$0 mfcc_order input.wav output.mfcc filter_bank_order freq"
    exit 1
 fi
 
 mfcc_order=$1
-inputfile=$2
-outputfile=$3
+filter_bank_order=$2
+freq=$3
+inputfile=$4
+outputfile=$5
 
 UBUNTU_SPTK=1
 if [[ $UBUNTU_SPTK == 1 ]]; then
@@ -40,10 +42,10 @@ fi
 
 # Main command for feature extration
 sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
-	$MFCC -l 240 -m $mfcc_order > $base.mfcc
+	$MFCC -l 240 -m $mfcc_order -n $filter_bank_order -s $freq > $base.mfcc
 
 # Our array files need a header with the number of cols and rows:
-ncol=$((mfcc_order+1)) # lpc p =>  (gain a1 a2 ... ap) 
+ncol=$((mfcc_order)) # lpc p =>  (gain a1 a2 ... ap) 
 #nrow=`$X2X +fa < $base.lp | wc -l | perl -ne 'print $_/'$ncol', "\n";'` # `` Hace que se escriba en la posicion determinada
 nrow=$($X2X +fa < $base.mfcc | wc -l | perl -ne 'print $_/'$ncol', "\n";') #alternativa moderna de la linia superior
 

@@ -23,16 +23,24 @@ world=users
 #menos 0.5 porciento de error en clasificacion
 #coste por debajo del 5 en verificacion
 
-#Buscar valors optims d'aquests llindars
-em_threshold=1.e-3
-em_iterations=64
-nmix=32
-#init_method=1=>EM, init_method=2=>VQ
-init_method=1
+#WORLD_OPTS (#init_method=1=>VQ, init_method=2=>EM)
+WO_init_method=1
+WO_Num_it_init=50000000
+WO_Num_it_fin=50
+WO_LogProb_th_init=0.000001
+WO_LogProb_th_fin=0.001
+WO_nmix=100
 
-#m mayor pero hace falta cambiar inicializacion aleatoria
-WORLD_OPTS="-T $em_threshold -N $em_iterations -m $nmix -i $init_method"
-TRAIN_OPTS="-T $em_threshold -N $em_iterations -m $nmix -i $init_method"  
+#TRAIN_OPTS (#init_method=1=>VQ, init_method=2=>EM)
+TO_init_method=1
+TO_Num_it_init=50000
+TO_Num_it_fin=50000
+TO_LogProb_th_init=0.0000001
+TO_LogProb_th_fin=0.001
+TO_nmix=40
+
+WORLD_OPTS="-i $WO_init_method -n $WO_Num_it_init -t $WO_LogProb_th_init -T $WO_LogProb_th_fin -N $WO_Num_it_fin -m $WO_nmix"
+TRAIN_OPTS="-i $TO_init_method -n $TO_Num_it_init -t $TO_LogProb_th_init -T $TO_LogProb_th_fin -N $TO_Num_it_fin -m $TO_nmix"
 
 # ------------------------
 # Usage
@@ -106,7 +114,7 @@ compute_lp() {
     db=$1
     for filename in $(sort $lists/class/all.train $lists/class/all.test); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2lp 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2lp 14 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
@@ -116,7 +124,7 @@ compute_lpcc(){
     shift
     for filename in $(sort $*); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2lpcc 8 15 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2lpcc 15 14 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
@@ -125,7 +133,7 @@ compute_mfcc(){
     db=$1
     for filename in $(sort $lists/class/all.train $lists/class/all.test); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2mfcc 12 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2mfcc 13 20 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
