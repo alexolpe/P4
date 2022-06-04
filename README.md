@@ -22,7 +22,7 @@ PAV - P4: reconocimiento y verificación del locutor
   salida de SPTK (líneas 45 a 47 del script `wav2lp.sh`).
   
   Primero de todo se debe entrenar la señal de entrada, de esa manera se obtiene el fichero $base.lp que proporciona los coeficientes LPC.
-  Para obtener un fichero de formato fmatrix a la salida se debe calcular el número de columnas que deberá tener la matriz y el número de filas. Como se puede observar el número de columnas se calcula según el parámetro lpc_order que indica cuantos coeficientes de predicción lineal se tienen y se suma uno porque el primer parámetro que entrega esta variable se debe tener en cuenta ya que es la ganancia de la prediccón. Eso lo extraemos del fichero .lp convirtiendo el contenido a ASCII con X2X +fa y contando el número de líneas con el comando wc -l.
+  Para obtener un fichero de formato fmatrix a la salida se debe calcular el número de columnas que deberá tener la matriz y el número de filas. Como se puede observar el número de columnas se calcula según el parámetro lpc_order que indica cuantos coeficientes de predicción lineal se tienen y se suma uno porque el primer parámetro que entrega esta variable no se debe tener en cuenta ya que es la ganancia de la prediccón. Eso lo extraemos del fichero .lp convirtiendo el contenido a ASCII con X2X +fa y contando el número de líneas con el comando wc -l.
   
   * ¿Por qué es conveniente usar este formato (u otro parecido)? Tenga en cuenta cuál es el formato de
     entrada y cuál es el de resultado.
@@ -116,8 +116,14 @@ Se utilizan entre 14 y 18 coeficientes para reconocimiento del hablante.
 
 Complete el código necesario para entrenar modelos GMM.
 
+![imagen](https://user-images.githubusercontent.com/91128741/172025783-b29e617d-f1ba-4ff7-a3aa-82e81e669836.png)
+
+
+
 - Inserte una gráfica que muestre la función de densidad de probabilidad modelada por el GMM de un locutor
   para sus dos primeros coeficientes de MFCC.
+  
+  
   
 - Inserte una gráfica que permita comparar los modelos y poblaciones de dos locutores distintos (la gŕafica
   de la página 20 del enunciado puede servirle de referencia del resultado deseado). Analice la capacidad
