@@ -24,7 +24,7 @@ world=users
 #coste por debajo del 5 en verificacion
 
 #WORLD_OPTS (#init_method=1=>VQ, init_method=2=>EM)
-WO_init_method=1
+WO_init_method=2
 WO_Num_it_init=50000000
 WO_Num_it_fin=50
 WO_LogProb_th_init=0.000001
@@ -32,11 +32,14 @@ WO_LogProb_th_fin=0.001
 WO_nmix=100
 
 #TRAIN_OPTS (#init_method=1=>VQ, init_method=2=>EM)
-TO_init_method=1
+TO_init_method=2
 TO_Num_it_init=50000
+#TO_Num_it_fin=64
 TO_Num_it_fin=50000
 TO_LogProb_th_init=0.0000001
+#TO_LogProb_th_fin=1.e-6
 TO_LogProb_th_fin=0.001
+#TO_nmix=36
 TO_nmix=40
 
 WORLD_OPTS="-i $WO_init_method -n $WO_Num_it_init -t $WO_LogProb_th_init -T $WO_LogProb_th_fin -N $WO_Num_it_fin -m $WO_nmix"
@@ -134,6 +137,7 @@ compute_mfcc(){
     for filename in $(sort $lists/class/all.train $lists/class/all.test); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
         EXEC="wav2mfcc 13 20 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        #provar 14 enlloc de 13
         echo $EXEC && $EXEC || exit 1
     done
 }
@@ -232,9 +236,9 @@ for cmd in $*; do
 	   # lists/final/verif.test.candidates
         compute_$FEAT $db_final $lists/final/verif.test
        gmm_verify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm -w $world lists/final/verif.users lists/final/verif.test lists/final/verif.test.candidates | tee $w/verif_test.log
-        #$F[2]> canviar valor per minimitzar el cost (thd) optim
+        #$F[2]> canviar valor per minimitzar el cost (thd) optim (0.974854913166401)
         perl -ane 'print "$F[0]\t$F[1]\t";
-            if ($F[2] > 0.974854913166401) {print "1\n"}
+            if ($F[2] > 0.111379088364011) {print "1\n"}
             else {print "0\n"}' $w/verif_test.log | tee verif_test.log
 
    # If the command is not recognize, check if it is the name
