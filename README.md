@@ -168,8 +168,12 @@ Complete el código necesario para realizar verificación del locutor y optimice
   de reconocimiento.
     |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
-  | tasa error |  8.15%  |0.51%    |   0.89%   |
- 
+  | Missed|  78/250=0.312 |    |     |
+  | FalsaAlarm|  22/1000=0.022 |    |   0.89%   |
+  | CostDetection|  51 |    |   0.89%   |
+  | Threshold|  0.392219510702497 |    |   0.89%   |
+
+
 ### Test final
 
 - Adjunte, en el repositorio de la práctica, los ficheros `class_test.log` y `verif_test.log` 
