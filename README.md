@@ -156,7 +156,7 @@ Complete el código necesario para realizar reconociminto del locutor y optimice
   
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
-  | tasa error |   -0.705651   |0.300302      |   0.231577   |
+  | tasa error |   49%   |0.300302      |   0.231577   |
 
 ### Verificación del locutor.
 
