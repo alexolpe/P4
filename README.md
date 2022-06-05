@@ -96,13 +96,18 @@ La gráfica que parece que tiene más información es la del MFCC seguido de la 
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
   parámetros 2 y 3 para un locutor, y rellene la tabla siguiente con los valores obtenidos.
+  
+  pearson work/lp/BLOCK00/SES005/*.lp
+  pearson work/lpcc/BLOCK00/SES005/*.lpcc
+  pearson work/mfcc/BLOCK00/SES005/*.mfcc
 
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
   | &rho;<sub>x</sub>[2,3] |   -0.705651   |0.300302      |   0.231577   |
   
   + Compare los resultados de <code>pearson</code> con los obtenidos gráficamente.
-  Sabemos que un valor alto de la rho[2,3] nos indica que los coeficientes están muy correlados y un valor bajo nos indica lo contrario. Si comparamos las gráficas vemos que estamos en lo cierto, el valor de rho más cercano a 0 es el del MFCC tal y como se ha comentado en las gráficas y esto es porqué los coeficientes son poco correlados. Seguidamente tenemos el método LPCC que también muestra poca correlación en sus coeficientes pero en mayor medida que los MFCC. Por útlimo, tenemos los coeficientes extraídos con LP que tienen una correlación muy elevada. 
+
+Sabemos que un valor alto de la rho[2,3] nos indica que los coeficientes están muy correlados y un valor bajo nos indica lo contrario. Si comparamos las gráficas vemos que estamos en lo cierto, el valor de rho más cercano a 0 es el del MFCC tal y como se ha comentado en las gráficas y esto es porqué los coeficientes son poco correlados. Seguidamente tenemos el método LPCC que también muestra poca correlación en sus coeficientes pero en mayor medida que los MFCC. Por útlimo, tenemos los coeficientes extraídos con LP que tienen una correlación muy elevada. 
   En conclusión, los resultados de las tablas concuerdan con los de las gráficas.
   
 - Según la teoría, ¿qué parámetros considera adecuados para el cálculo de los coeficientes LPCC y MFCC?
