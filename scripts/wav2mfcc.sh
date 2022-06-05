@@ -4,7 +4,7 @@
 ## \TODO This file implements a very trivial feature extraction; use it as a template for other front ends.
 ## 
 ## Please, read SPTK documentation and some papers in order to implement more advanced front ends.
-
+#DONE
 # Base name for temporary files
 base=/tmp/$(basename $0).$$ 
 
@@ -15,7 +15,7 @@ cleanup() {
 }
 
 if [[ $# != 5 ]]; then
-   echo "$0 mfcc_order input.wav output.mfcc filter_bank_order freq"
+   echo "$0 mfcc_order filter_bank_order freq input.wav output.mfcc"
    exit 1
 fi
 
@@ -42,7 +42,7 @@ fi
 
 # Main command for feature extration
 sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
-	$MFCC -l 240 -m $mfcc_order -n $filter_bank_order -s $freq> $base.mfcc
+	$MFCC -l 240 -m $mfcc_order -n $filter_bank_order -s $freq > $base.mfcc
 
 # Our array files need a header with the number of cols and rows:
 ncol=$((mfcc_order)) # lpc p =>  (gain a1 a2 ... ap) 

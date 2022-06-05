@@ -12,38 +12,55 @@
 # - w:        a working directory for temporary files
 # - name_exp: name of the experiment
 # - db:       directory of the speecon database 
-lists=lists
+#DONE: There are different sets in order tu use the scripts optim_mfcc and optim_train to find the parameters that fit better
+
 w=work
 name_exp=one
+
+#Per la parametritzacio
+#w=$5
+#mfcc_order=$2
+#filter_bank_order=$3 
+#freq=$4
+
+#Per entrenament + verificacio
+#w=$5
+#name_exp=$5
+
+#Per classificacio
+#w=$3
+#name_exp=$3
+
+lists=lists
 db_devel=spk_8mu/speecon
 db_final=spk_8mu/sr_test
 world=users
 
-#Referencia del ano pasado
-#menos 0.5 porciento de error en clasificacion
-#coste por debajo del 5 en verificacion
-
 #WORLD_OPTS (#init_method=1=>VQ, init_method=2=>EM)
-WO_init_method=2
-WO_Num_it_init=50000000
-WO_Num_it_fin=50
-WO_LogProb_th_init=0.000001
-WO_LogProb_th_fin=0.001
-WO_nmix=100
+#WO_init_method=
+#WO_Num_it_init=
+#WO_Num_it_fin=
+#WO_LogProb_th_init=
+#WO_LogProb_th_fin=
+#WO_nmix=
 
 #TRAIN_OPTS (#init_method=1=>VQ, init_method=2=>EM)
-TO_init_method=2
-TO_Num_it_init=50000
-#TO_Num_it_fin=64
-TO_Num_it_fin=50000
-TO_LogProb_th_init=0.0000001
-#TO_LogProb_th_fin=1.e-6
-TO_LogProb_th_fin=0.001
-#TO_nmix=36
-TO_nmix=40
+#TO_init_method=
+#TO_Num_it_init=
+#TO_Num_it_fin=
+#TO_LogProb_th_init=
+#TO_LogProb_th_fin=
+#TO_nmix=
 
-WORLD_OPTS="-i $WO_init_method -n $WO_Num_it_init -t $WO_LogProb_th_init -T $WO_LogProb_th_fin -N $WO_Num_it_fin -m $WO_nmix"
-TRAIN_OPTS="-i $TO_init_method -n $TO_Num_it_init -t $TO_LogProb_th_init -T $TO_LogProb_th_fin -N $TO_Num_it_fin -m $TO_nmix"
+TO_init_method=2
+TO_LogProb_th_fin=1.e-6
+TO_Num_it_fin=60
+TO_nmix=64
+
+#WORLD_OPTS="-i $WO_init_method -n $WO_Num_it_init -t $WO_LogProb_th_init -T $WO_LogProb_th_fin -N $WO_Num_it_fin -m $WO_nmix"
+WORLD_OPTS="-i $TO_init_method -T $TO_LogProb_th_fin -N $TO_Num_it_fin -m $TO_nmix"
+TRAIN_OPTS="-i $TO_init_method -T $TO_LogProb_th_fin -N $TO_Num_it_fin -m $TO_nmix"
+#TRAIN_OPTS="-i $TO_init_method -n $TO_Num_it_init -t $TO_LogProb_th_init -T $TO_LogProb_th_fin -N $TO_Num_it_fin -m $TO_nmix"
 
 # ------------------------
 # Usage
@@ -112,12 +129,13 @@ fi
 # \TODO
 # Create your own features with the name compute_$FEAT(), where $FEAT is the name of the feature.
 # - Select (or change) different features, options, etc. Make you best choice and try several options.
-
+#DONE: created
 compute_lp() {
     db=$1
-    for filename in $(sort $lists/class/all.train $lists/class/all.test); do
+    shift
+    for filename in $(sort $*); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2lp 14 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2lp 20 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
@@ -134,10 +152,10 @@ compute_lpcc(){
 
 compute_mfcc(){
     db=$1
-    for filename in $(sort $lists/class/all.train $lists/class/all.test); do
+    shift
+    for filename in $(sort $*); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2mfcc 13 20 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
-        #provar 14 enlloc de 13
+        EXEC="wav2mfcc 20 30 8 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
@@ -168,10 +186,10 @@ for cmd in $*; do
        ## @file
 	   # \TODO
 	   # Select (or change) good parameters for gmm_train
+       #DONE: selected using optim_train.sh
        for dir in $db_devel/BLOCK*/SES* ; do
            name=${dir/*\/}
            echo $name ----
-           # canviar T
            gmm_train  -v 1 $TRAIN_OPTS -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$name.gmm $lists/class/$name.train || exit 1
            echo
        done
@@ -195,7 +213,8 @@ for cmd in $*; do
 	   # Implement 'trainworld' in order to get a Universal Background Model for speaker verification
 	   #
 	   # - The name of the world model will be used by gmm_verify in the 'verify' command below.
-        gmm_train  -v 1 $WORLD_OPTS -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$world.gmm $lists/verif/$world.train || exit 1
+       #DONE
+       gmm_train  -v 1 $WORLD_OPTS -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$world.gmm $lists/verif/$world.train || exit 1
 
    elif [[ $cmd == verify ]]; then
        ## @file
@@ -206,6 +225,7 @@ for cmd in $*; do
 	   #   For instance:
 	   #   * <code> gmm_verify ... > $w/verif_${FEAT}_${name_exp}.log </code>
 	   #   * <code> gmm_verify ... | tee $w/verif_${FEAT}_${name_exp}.log </code>
+       #DONE
        gmm_verify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm -w $world lists/gmm.list lists/verif/all.test lists/verif/all.test.candidates | tee $w/verif_${FEAT}_${name_exp}.log
 
    elif [[ $cmd == verifyerr ]]; then
@@ -223,9 +243,9 @@ for cmd in $*; do
 	   # Perform the final test on the speaker classification of the files in spk_ima/sr_test/spk_cls.
 	   # The list of users is the same as for the classification task. The list of files to be
 	   # recognized is lists/final/class.test
-       compute_$FEAT $db_final $lists/final/class.test
-        (gmm_classify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm $lists/gmm.list  $lists/final/class.test | tee class_test.log) || exit 1
-
+       #DONE
+        compute_$FEAT $db_final $lists/final/class.test
+       (gmm_classify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm $lists/gmm.list $lists/final/class.test | tee class_test.log) || exit 1
 
    elif [[ $cmd == finalverif ]]; then
        ## @file
@@ -234,11 +254,12 @@ for cmd in $*; do
 	   # The list of legitimate users is lists/final/verif.users, the list of files to be verified
 	   # is lists/final/verif.test, and the list of users claimed by the test files is
 	   # lists/final/verif.test.candidates
+       #DONE
         compute_$FEAT $db_final $lists/final/verif.test
        gmm_verify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm -w $world lists/final/verif.users lists/final/verif.test lists/final/verif.test.candidates | tee $w/verif_test.log
         #$F[2]> canviar valor per minimitzar el cost (thd) optim (0.974854913166401)
         perl -ane 'print "$F[0]\t$F[1]\t";
-            if ($F[2] > 0.111379088364011) {print "1\n"}
+            if ($F[2] > 0.392219510702497) {print "1\n"}
             else {print "0\n"}' $w/verif_test.log | tee verif_test.log
 
    # If the command is not recognize, check if it is the name

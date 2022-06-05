@@ -4,7 +4,7 @@
 ## \TODO This file implements a very trivial feature extraction; use it as a template for other front ends.
 ## 
 ## Please, read SPTK documentation and some papers in order to implement more advanced front ends.
-
+#DONE
 # Base name for temporary files
 base=/tmp/$(basename $0).$$ 
 
@@ -15,7 +15,7 @@ cleanup() {
 }
 
 if [[ $# != 4 ]]; then
-   echo "$0 lpc_order cepstrum_order input.wav output.lpcc"
+   echo "$0 lpc_order cepstrum_order input.wav output.lpcc "
    exit 1
 fi
 
