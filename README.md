@@ -141,6 +141,8 @@ Complete el código necesario para entrenar modelos GMM.
  
   La primera fila de imagenes corresponden al modelo gausiano del locutor 145 comparada con las poblaciones 145 y 189. 
   La segunda fila de imagenes corresponden al modelo gausiano del locutor 190 comparada con las poblaciones 145 y 189.
+  
+  Se puede observar que el modelado GMM consigue ajustarse muy bien a las características de su locutor (en este caso, los dos primeros coeficientes MFCC), así cuando se compara el modelo de un locutor con la población de otro, se aprecia la diferencia entre ambos. Las zonas de población más densa (curva 50%), se muestra de manera muy visual la gran diferencia entre un locutor y otro, por lo que el modelado GMM es una herramienta muy útil para el reconocimiento y verificación del locutor.
 
 
 
