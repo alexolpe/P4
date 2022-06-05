@@ -96,11 +96,15 @@ La gráfica que parece que tiene más información es la del MFCC seguido de la 
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
   parámetros 2 y 3 para un locutor, y rellene la tabla siguiente con los valores obtenidos.
-  
+  ```sh
   pearson work/lp/BLOCK00/SES005/*.lp
+  ```
+  ```sh
   pearson work/lpcc/BLOCK00/SES005/*.lpcc
+  ```
+  ```sh
   pearson work/mfcc/BLOCK00/SES005/*.mfcc
-
+  ```
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
   | &rho;<sub>x</sub>[2,3] |   -0.705651   |0.300302      |   0.231577   |
