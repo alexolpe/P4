@@ -170,11 +170,12 @@ Complete el código necesario para realizar verificación del locutor y optimice
   de reconocimiento.
     |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
-  | Missed|  78/250=0.312 |    |     |
-  | FalsaAlarm|  22/1000=0.022 |    |   0.89%   |
-  | CostDetection|  51 |    |   0.89%   |
-  | Threshold|  0.392219510702497 |    |   0.89%   |
+  | Missed|  78/250=0.312 |  12/250=0.0480  |     |
+  | FalsaAlarm|  22/1000=0.022 |  4/1000=0.0040  |   0.89%   |
+  | CostDetection|  51 |  8.4  |   0.89%   |
+  | Threshold|  0.392219510702497 |  0.298366013850301  |   0.89%   |
 
+Para obtener los mejores resultados se ha decidido crear dos scripts que permitieran automatizar la búsquesda de los parámetros que nos dieran mejores resultados. Estos scripts son el optim_mfcc.sh y optim_train.sh. Con el primero hemos buscado que valores de las opciones del mfcc daban mejores resultados. Con el segundo, se pretende buscar que valor de las opciones que ofrece gmm_train.cpp daban mejores resultados. En un primer momento se pretendia utilizar las opciones usadas en clase y posteriormente añadir otras que tambien ofrece gmm_train.cpp. Cabe mencionar que debido al elevado coste computacional de ejecutar los ficheros gmm_train.cpp, gmm_classify.cpp y gmm_verify.cpp para cada una de las señales de la base de datos, no nos ha dado tiempo a realizar todas las pruebas que nos hubiera gustado que hubieran permitido obtener unas tasas de error y unos CostDetection mejores de los que disponemos.
 
 ### Test final
 
