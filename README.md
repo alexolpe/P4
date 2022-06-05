@@ -191,6 +191,7 @@ Para obtener los mejores resultados se ha decidido crear dos scripts que permiti
 - Adjunte, en el repositorio de la práctica, los ficheros `class_test.log` y `verif_test.log` 
   correspondientes a la evaluación *ciega* final.
 
+Estos ficheros se encuentran en la carpeta "finalClass&Verif"
 ### Trabajo de ampliación.
 
 - Recuerde enviar a Atenea un fichero en formato zip o tgz con la memoria (en formato PDF) con el trabajo 
