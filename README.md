@@ -17,6 +17,8 @@ PAV - P4: reconocimiento y verificación del locutor
  
  •	$WINDOW: se utiliza para enventanar una secuencia de datos. La ventana escogida (-w) (Blackman, Hamming, Barlett,...) se multiplica por la secuencia de datos de entrada de una determinada longitud (-l) obteniendo una salida de una nueva longitud (-L). En este caso se usa la ventana de Blackman por defecto y una longitud de 240 muestras tanto para los datos de entrada como los de salida.
  
+ •	$FRAME: permite convertir una secuencia de datos de entrada en un conjunto de frames. Estos pueden estar o no superpuestos, con un periodo (-p) y una longitud (-l). En este caso la longitud es de 240 muestras y el periodo es de 80 muestras.
+ 
  •	$LPC: Calcula los coeficientes LPC (predicción lineal) usando el método Levinson-Durbin. Se pueden fijar parámetros como la longitud del frame (-l) a 240 muestras y el orden del LPC (-m).
 
 
