@@ -11,23 +11,27 @@ PAV - P4: reconocimiento y verificación del locutor
   
   La misión del script wav2lp.sh consiste en realizar una parametrización de una señal de voz usando coeficientes de predicción lineal.
   
-  El comando sox sirve para generar una nueva señal con los parámetros que se mencionan a continuación y sin cabezeras. 
+ •	Sox: se utiliza para convertir una señal de audio en formato WAVE a (-t) un señal sin cabeceras, codificado como (-e) signed de (-b) 16 bits. De entre todas las funciones que tiene destacan: mezclar múltiples ficheros de entrada, normalizar, definir tipo de archivo de salida, número de canales…
   
-  La variable $X2X consiste en un comando llamado spkt x2x que permite convertir los datos de entrada en otro tipo de datos. Estos tipos de datos de entrada y salida los podemos especificar en la linea de comandos.
-  
-  Dentro de ese comando se debe especificar el $FRAME que indica como partir la señal original para poder parametrizarla por trozos y la $WINDOW sirve para enventanar una secuencia de datos. La ventana escogida (-w) (Blackman, Hamming, Barlett,...) se multiplica por la secuencia de datos de entrada de longitud (-l) l obteniendo una salida de longitud (-L) L. En wav2lp.sh se usa la ventana de Blackman por defecto y una longitud de 240 muestras tanto para los datos de entrada como los de salida.
+ •	$X2X: Programa de SPTK que nos permite convertir datos de una entrada estándard a otro tipo de datos (+sf, short format en nuestro caso), enviando el resultado a una salida estándar.
  
+ •	$WINDOW: se utiliza para enventanar una secuencia de datos. La ventana escogida (-w) (Blackman, Hamming, Barlett,...) se multiplica por la secuencia de datos de entrada de una determinada longitud (-l) obteniendo una salida de una nueva longitud (-L). En este caso se usa la ventana de Blackman por defecto y una longitud de 240 muestras tanto para los datos de entrada como los de salida.
+ 
+ •	$FRAME: permite convertir una secuencia de datos de entrada en un conjunto de frames. Estos pueden estar o no superpuestos, con un periodo (-p) y una longitud (-l). En este caso la longitud es de 240 muestras y el periodo es de 80 muestras.
+ 
+ •	$LPC: Calcula los coeficientes LPC (predicción lineal) usando el método Levinson-Durbin. Se pueden fijar parámetros como la longitud del frame (-l) a 240 muestras y el orden del LPC (-m).
+
 
 - Explique el procedimiento seguido para obtener un fichero de formato *fmatrix* a partir de los ficheros de
   salida de SPTK (líneas 45 a 47 del script `wav2lp.sh`).
   
   Primero de todo se debe entrenar la señal de entrada, de esa manera se obtiene el fichero $base.lp que proporciona los coeficientes LPC.
-  Para obtener un fichero de formato fmatrix a la salida se debe calcular el número de columnas que deberá tener la matriz y el número de filas. Como se puede observar el número de columnas se calcula según el parámetro lpc_order que indica cuantos coeficientes de predicción lineal se tienen y se suma uno porque el primer parámetro que entrega esta variable se debe tener en cuenta ya que es la ganancia de la prediccón. Eso lo extraemos del fichero .lp convirtiendo el contenido a ASCII con X2X +fa y contando el número de líneas con el comando wc -l.
+  Para obtener un fichero de formato fmatrix a la salida se debe calcular el número de columnas que deberá tener la matriz y el número de filas. Como se puede observar el número de columnas se calcula según el parámetro lpc_order que indica cuantos coeficientes de predicción lineal se tienen y se suma uno porque el primer parámetro que entrega esta variable no se debe tener en cuenta ya que es la ganancia de la prediccón. Eso lo extraemos del fichero .lp convirtiendo el contenido a ASCII con X2X +fa y contando el número de líneas con el comando wc -l.
   
   * ¿Por qué es conveniente usar este formato (u otro parecido)? Tenga en cuenta cuál es el formato de
     entrada y cuál es el de resultado.
     
-    Conviene usar este formato porque entrega los datos de forma muy ordenada cosa que simplifica mucho la comparación con otras matrices. El formato de entrada es una señal unidimensional (un vector) con las muestras de la señal muestreada de áudio. El formato de salida es una matriz con las columnas que representan los coeficientes de predicción lineal de cada trama que son las filas. 
+ Utilizando este formato se puede pasar de una señal de entrada que es un señal unidimensional (un vector) con las muestras de la señal de audio a una matriz en la que se tiene un fácil y rápido acceso a todos los datos almacenados. Además, tienen una correspondencia directa entre la posición en la matriz y el orden del coeficiente y número de trama, por lo que simplifica mucho su manipulación a la hora de trabajar. También ofrece información directa en la cabecera sobre el número de tramas y de coeficientes calculados
 
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales de predicción lineal
   (LPCC) en su fichero <code>scripts/wav2lpcc.sh</code>:
@@ -42,7 +46,7 @@ PAV - P4: reconocimiento y verificación del locutor
   fichero <code>scripts/wav2mfcc.sh</code>:
     ```sh
     sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
-       $MFCC -l 240 -m $mfcc_order -n $num_filters -s $sampl_freq > $base.mfcc
+       $MFCC -l 240 -m $mfcc_order -n $filter_bank_order -s $freq > $base.mfcc
     ```
 
 ### Extracción de características.
@@ -92,13 +96,22 @@ La gráfica que parece que tiene más información es la del MFCC seguido de la 
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
   parámetros 2 y 3 para un locutor, y rellene la tabla siguiente con los valores obtenidos.
-
+  ```sh
+  pearson work/lp/BLOCK00/SES005/*.lp
+  ```
+  ```sh
+  pearson work/lpcc/BLOCK00/SES005/*.lpcc
+  ```
+  ```sh
+  pearson work/mfcc/BLOCK00/SES005/*.mfcc
+  ```
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
   | &rho;<sub>x</sub>[2,3] |   -0.705651   |0.300302      |   0.231577   |
   
   + Compare los resultados de <code>pearson</code> con los obtenidos gráficamente.
-  Sabemos que un valor alto de la rho[2,3] nos indica que los coeficientes están muy correlados y un valor bajo nos indica lo contrario. Si comparamos las gráficas vemos que estamos en lo cierto, el valor de rho más cercano a 0 es el del MFCC tal y como se ha comentado en las gráficas y esto es porqué los coeficientes son poco correlados. Seguidamente tenemos el método LPCC que también muestra poca correlación en sus coeficientes pero en mayor medida que los MFCC. Por útlimo, tenemos los coeficientes extraídos con LP que tienen una correlación muy elevada. 
+
+Sabemos que un valor alto de la rho[2,3] nos indica que los coeficientes están muy correlados y un valor bajo nos indica lo contrario. Si comparamos las gráficas vemos que estamos en lo cierto, el valor de rho más cercano a 0 es el del MFCC tal y como se ha comentado en las gráficas y esto es porqué los coeficientes son poco correlados. Seguidamente tenemos el método LPCC que también muestra poca correlación en sus coeficientes pero en mayor medida que los MFCC. Por útlimo, tenemos los coeficientes extraídos con LP que tienen una correlación muy elevada. 
   En conclusión, los resultados de las tablas concuerdan con los de las gráficas.
   
 - Según la teoría, ¿qué parámetros considera adecuados para el cálculo de los coeficientes LPCC y MFCC?
@@ -116,12 +129,33 @@ Se utilizan entre 14 y 18 coeficientes para reconocimiento del hablante.
 
 Complete el código necesario para entrenar modelos GMM.
 
+
+
+
+
 - Inserte una gráfica que muestre la función de densidad de probabilidad modelada por el GMM de un locutor
   para sus dos primeros coeficientes de MFCC.
+  
+  
+![imagen](https://user-images.githubusercontent.com/91128741/172026208-effc06f1-6850-412a-a93e-339d0061cb36.png)
+
+
+  
+  
+  
   
 - Inserte una gráfica que permita comparar los modelos y poblaciones de dos locutores distintos (la gŕafica
   de la página 20 del enunciado puede servirle de referencia del resultado deseado). Analice la capacidad
   del modelado GMM para diferenciar las señales de uno y otro.
+  
+ ![imagen](https://user-images.githubusercontent.com/91128741/172026774-a3c986f3-a608-44fe-8eb4-0b7471844837.png)
+ 
+  La primera fila de imagenes corresponden al modelo gausiano del locutor 145 comparada con las poblaciones 145 y 189. 
+  La segunda fila de imagenes corresponden al modelo gausiano del locutor 190 comparada con las poblaciones 145 y 189.
+  
+  Se puede observar que el modelado GMM consigue ajustarse muy bien a las características de su locutor (en este caso, los dos primeros coeficientes MFCC), así cuando se compara el modelo de un locutor con la población de otro, se aprecia la diferencia entre ambos. Las zonas de población más densa (curva 50%), se muestra de manera muy visual la gran diferencia entre un locutor y otro, por lo que el modelado GMM es una herramienta muy útil para el reconocimiento y verificación del locutor.
+
+
 
 ### Reconocimiento del locutor.
 
@@ -129,6 +163,11 @@ Complete el código necesario para realizar reconociminto del locutor y optimice
 
 - Inserte una tabla con la tasa de error obtenida en el reconocimiento de los locutores de la base de datos
   SPEECON usando su mejor sistema de reconocimiento para los parámetros LP, LPCC y MFCC.
+  
+  
+  |                        | LP   | LPCC | MFCC |
+  |------------------------|:----:|:----:|:----:|
+  | tasa error |  8.15%  |0.51%    |   0.89%   |
 
 ### Verificación del locutor.
 
@@ -138,12 +177,21 @@ Complete el código necesario para realizar verificación del locutor y optimice
   de verificación de SPEECON. La tabla debe incluir el umbral óptimo, el número de falsas alarmas y de
   pérdidas, y el score obtenido usando la parametrización que mejor resultado le hubiera dado en la tarea
   de reconocimiento.
- 
+    |                        | LP   | LPCC | MFCC |
+  |------------------------|:----:|:----:|:----:|
+  | Missed|  78/250=0.312 |  12/250=0.0480  |  31/250=0.1240  |
+  | FalsaAlarm|  22/1000=0.022 |  4/1000=0.0040  |   4/1000=0.0040   |
+  | CostDetection|  51 |  8.4  |   16.0   |
+  | Threshold|  0.392219510702497 |  0.298366013850301  |   0.200368996282308   |
+
+Para obtener los mejores resultados se ha decidido crear dos scripts que permitieran automatizar la búsquesda de los parámetros que nos dieran mejores resultados. Estos scripts son el optim_mfcc.sh y optim_train.sh. Con el primero hemos buscado que valores de las opciones del mfcc daban mejores resultados. Con el segundo, se pretende buscar que valor de las opciones que ofrece gmm_train.cpp daban mejores resultados. En un primer momento se pretendia utilizar las opciones usadas en clase y posteriormente añadir otras que tambien ofrece gmm_train.cpp. Cabe mencionar que debido al elevado coste computacional de ejecutar los ficheros gmm_train.cpp, gmm_classify.cpp y gmm_verify.cpp para cada una de las señales de la base de datos, no nos ha dado tiempo a realizar todas las pruebas que nos hubiera gustado. Estas hubieran permitido obtener unas tasas de error y unos CostDetection mejores de los que disponemos.
+
 ### Test final
 
 - Adjunte, en el repositorio de la práctica, los ficheros `class_test.log` y `verif_test.log` 
   correspondientes a la evaluación *ciega* final.
 
+Estos ficheros se encuentran en la carpeta "finalClass&Verif"
 ### Trabajo de ampliación.
 
 - Recuerde enviar a Atenea un fichero en formato zip o tgz con la memoria (en formato PDF) con el trabajo 
